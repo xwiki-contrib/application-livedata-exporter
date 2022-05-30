@@ -37,10 +37,11 @@
   <minorEdit>false</minorEdit>
   <syntaxId>plain/1.0</syntaxId>
   <hidden>true</hidden>
-  <content>livedata.exporter.menuName=Export...
+  <content>livedata.exporter.menuName=Export…
 livedata.exporter.panelTitle=Export
 livedata.exporter.startExportButton=Start export
-livedata.exporter.download=Download</content>
+livedata.exporter.download=Download
+</content>
   <object>
     <name>LiveDataExporter.Code.Translations</name>
     <number>0</number>
