@@ -48,6 +48,13 @@ livedata.exporter.deleteFailed=Deleting the export failed for unknown reasons.
 livedata.exporter.startingExport=Starting export…
 livedata.exporter.startingExportFailed=Starting the export failed for unknown reasons.
 livedata.exporter.startingExportDone=The export has been started.
+livedata.exporter.exportTitle=Export {0}
+livedata.exporter.properties=Properties
+livedata.exporter.filters=Filters
+livedata.exporter.filterItem={0}: {1}
+livedata.exporter.sorting=Sorting
+livedata.exporter.descendingSortItem={0} in descending order
+livedata.exporter.ascendingSortItem={0} in ascending order
 </content>
   <object>
     <name>LiveDataExporter.Code.Translations</name>

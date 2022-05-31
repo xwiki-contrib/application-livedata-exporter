@@ -138,7 +138,14 @@
     'deleteFailed',
     'startingExport',
     'startingExportFailed',
-    'startingExportDone'
+    'startingExportDone',
+    'exportTitle',
+    'properties',
+    'filters',
+    'filterItem',
+    'sorting',
+    'descendingSortItem',
+    'ascendingSortItem'
   ]
 });
 
@@ -166,7 +173,7 @@ require(['xwiki-l10n!application-livedata-exporter-translation-keys'], function 
       this.container.appendChild(exportButtonWrapper);
 
       this.exportList = document.createElement('ul');
-      this.exportList.classList.add('export-list');
+      this.exportList.classList.add('export-list', 'list-group');
       this.container.appendChild(this.exportList);
 
       // Load the job.css resource by requesting this page that sets the appropriate header.
@@ -198,7 +205,60 @@ require(['xwiki-l10n!application-livedata-exporter-translation-keys'], function 
       }
     }
 
+    /**
+     * Creates a dl element that contains a description of the current Live Data configuration.
+     */
+    createExportDescription() {
+      const result = document.createElement('dl');
+      result.classList.add('export-description');
+      const propertiesLabel = document.createElement('dt');
+      propertiesLabel.textContent = l10n['properties'];
+      result.appendChild(propertiesLabel);
+
+      const propertyToDescriptor = this.liveData.data.meta.propertyDescriptors.reduce((a, v) =&gt; ({ ...a, [v.id]: v}), {});
+      const visibleProperties = this.liveData.data.query.properties.filter(p =&gt; p !== '_actions' &amp;&amp; propertyToDescriptor[p].visible);
+      const propertiesContent = document.createElement('dd');
+      propertiesContent.textContent = visibleProperties.map(p =&gt; propertyToDescriptor[p].name).join(', ');
+      result.appendChild(propertiesContent);
+
+      const filtersLabel = document.createElement('dt');
+      filtersLabel.textContent = l10n['filters'];
+      result.appendChild(filtersLabel);
+
+      this.liveData.data.query.filters.forEach(filter =&gt; {
+        const filterDefinition = this.liveData.getFilterDescriptor(filter.property);
+        const propertyName = propertyToDescriptor[filter.property].name;
+
+        let filterConstraints = [];
+        filter.constraints.forEach(constraint =&gt; {
+          const operatorName = filterDefinition?.operators.find(o =&gt; o.id === constraint.operator).name;
+          filterConstraints.push(operatorName + ' ' + constraint.value);
+        });
+        const filterItem = document.createElement('dd');
+        filterItem.textContent = l10n.get('filterItem', propertyName, filterConstraints.join(', '));
+        result.appendChild(filterItem);
+      });
+
+      const sortLabel = document.createElement('dt');
+      sortLabel.textContent = l10n['sorting'];
+      result.appendChild(sortLabel);
+
+      this.liveData.data.query.sort.forEach(sort =&gt; {
+        const propertyName = propertyToDescriptor[sort.property].name;
+        const sortItem = document.createElement('dd');
+        if (sort.descending) {
+          sortItem.textContent = l10n.get('descendingSortItem', propertyName);
+        } else {
+          sortItem.textContent = l10n.get('ascendingSortItem', propertyName);
+        }
+        result.appendChild(sortItem);
+      });
+
+      return result;
+    }
+
     startExport() {
+      const exportDescription = this.createExportDescription();
       const notification = new XWiki.widgets.Notification(l10n['startingExport'], 'inprogress');
       const requestURL = `${XWiki.contextPath}/rest/liveData/export/csv?namespace=wiki:${encodeURIComponent(XWiki.currentWiki)}`;
       const headers = {
@@ -218,8 +278,10 @@ require(['xwiki-l10n!application-livedata-exporter-translation-keys'], function 
           notification.replace(new XWiki.widgets.Notification(l10n['startingExportDone'], 'done'));
           const initialStatus = await rawResponse.json()
           const statusContainer = document.createElement('li');
-          statusContainer.classList.add('ui-progress');
-          statusContainer.innerHTML = '&lt;div class="ui-progress-background"&gt;\n' +
+          statusContainer.classList.add('ui-progress', 'list-group-item');
+          statusContainer.innerHTML = '&lt;p&gt;&lt;strong class="export-title"&gt;&lt;/strong&gt;&lt;/p&gt;\n' +
+            '&lt;dl class="export-description"&gt;&lt;/dl&gt;\n' +
+            '&lt;div class="ui-progress-background"&gt;\n' +
             '&lt;div class="ui-progress-bar green" style="width: 0;"&gt;&lt;/div&gt;&lt;/div&gt;\n' +
             '&lt;p class="ui-progress-message"&gt;&lt;/p&gt;\n' +
             '&lt;div class="xform"&gt;\n' +
@@ -234,6 +296,9 @@ require(['xwiki-l10n!application-livedata-exporter-translation-keys'], function 
             '&lt;/div&gt;';
           this.exportList.appendChild(statusContainer);
           const jobURL = `${XWiki.contextPath}/rest/liveData/export/csv?jobId=${encodeURIComponent(initialStatus.id)}`;
+
+          statusContainer.querySelector('.export-description').replaceWith(exportDescription);
+          statusContainer.querySelector('.export-title').textContent = l10n.get('exportTitle', initialStatus.id);
 
           const deleteButton = statusContainer.querySelector('.delete');
           deleteButton.textContent = l10n['delete'];
@@ -253,6 +318,7 @@ require(['xwiki-l10n!application-livedata-exporter-translation-keys'], function 
 
             e.preventDefault();
           });
+
 
           const downloadLink = statusContainer.querySelector('.download');
           downloadLink.textContent = l10n['download'];
@@ -292,6 +358,132 @@ require(['xwiki-l10n!application-livedata-exporter-translation-keys'], function 
     </property>
     <property>
       <use>always</use>
+    </property>
+  </object>
+  <object>
+    <name>LiveDataExporter.Code.Live Data Panel</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>62c6b7a5-a238-45d4-8e0f-c8ee68d7efa7</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <defaultValue>long</defaultValue>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <freeText>forbidden</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <contenttype>PureText</contenttype>
+        <disabled>0</disabled>
+        <editor>PureText</editor>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <contentType>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <freeText>forbidden</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>0</multiSelect>
+        <name>contentType</name>
+        <number>6</number>
+        <prettyName>Content Type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>CSS|LESS</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </contentType>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <freeText>forbidden</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>.livedata-advanced-panel-exporterPanel .export-list li {
+  margin-top: 0;
+}
+
+.livedata-advanced-panel-exporterPanel .export-list, .livedata-advanced-panel-exporterPanel .export-list .ui-progress-background, .livedata-advanced-panel-exporterPanel .export-list .buttons {
+  margin-top: 0.5em;
+}</code>
+    </property>
+    <property>
+      <contentType>CSS</contentType>
+    </property>
+    <property>
+      <name>Live Data Exporter Styles</name>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
     </property>
   </object>
 </xwikidoc>

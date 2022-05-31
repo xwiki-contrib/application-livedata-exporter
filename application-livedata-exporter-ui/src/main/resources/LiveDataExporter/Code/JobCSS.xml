@@ -42,7 +42,7 @@
 {{velocity output="false"}}
   #initRequiredSkinExtensions()
   #set ($discard = $xwiki.ssfx.use('uicomponents/job/job.css', true))
-
+  #set ($discard = $xwiki.ssx.use('LiveDataExporter.Code.Live Data Panel'))
   #getRequiredSkinExtensions($requiredSkinExtensions)
   ## We use the X-XWIKI-HTML-HEAD custom HTTP header to return the required JavaScript and CSS resources.
   #set ($discard = $response.setHeader('X-XWIKI-HTML-HEAD', $requiredSkinExtensions))
