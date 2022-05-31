@@ -20,14 +20,18 @@
 package org.xwiki.contrib.livedata.exporter.internal.rest;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang3.StringUtils;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.concurrent.ContextStoreManager;
 import org.xwiki.contrib.livedata.exporter.internal.LiveDataExportCacheManager;
@@ -42,6 +46,9 @@ import org.xwiki.rest.XWikiResource;
 import org.xwiki.rest.url.ParametrizedRestURLGenerator;
 import org.xwiki.contrib.livedata.exporter.rest.LiveDataExportResource;
 
+import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.internal.context.XWikiContextContextStore;
+
 /**
  * Default implementation of {@link LiveDataExportResource}.
  *
@@ -52,6 +59,8 @@ import org.xwiki.contrib.livedata.exporter.rest.LiveDataExportResource;
 @Singleton
 public class DefaultLiveDataExportResource extends XWikiResource implements LiveDataExportResource
 {
+    private static final String JOB_ID_SEPARATOR = "/";
+
     @Inject
     private JobExecutor jobExecutor;
 
@@ -60,6 +69,9 @@ public class DefaultLiveDataExportResource extends XWikiResource implements Live
 
     @Inject
     private LiveDataExportJobIdGenerator idGenerator;
+
+    @Inject
+    private Provider<XWikiContext> contextProvider;
 
     @Inject
     @Named("jobstatus")
@@ -72,8 +84,7 @@ public class DefaultLiveDataExportResource extends XWikiResource implements Live
     public Response createExportJob(String format, String namespace, LiveDataConfiguration configuration)
         throws Exception
     {
-        String sessionId = this.xcontextProvider.get().getRequest().getSession().getId();
-        LiveDataExportRequest jobRequest = new LiveDataExportRequest(sessionId, format, namespace, configuration);
+        LiveDataExportRequest jobRequest = new LiveDataExportRequest(format, namespace, configuration);
         jobRequest.setStatusLogIsolated(false);
         jobRequest.setStatusSerialized(false);
         jobRequest.setId(this.idGenerator.generateId());
@@ -94,7 +105,7 @@ public class DefaultLiveDataExportResource extends XWikiResource implements Live
             File resultFile = maybeResultFile.get().getFile();
 
             // TODO: this should depend on the actual export backend.
-            String downloadFilename = jobId.replace("/", "_") + ".csv";
+            String downloadFilename = jobId.replace(JOB_ID_SEPARATOR, "_") + ".csv";
             result = Response.ok(resultFile, "text/csv")
                 .header("Content-Disposition", String.format("attachment; filename=\"%s\"", downloadFilename))
                 .build();
@@ -103,5 +114,31 @@ public class DefaultLiveDataExportResource extends XWikiResource implements Live
         }
 
         return result;
+    }
+
+    @Override
+    public Response delete(String jobId)
+    {
+        boolean success = false;
+
+        if (StringUtils.isNotBlank(jobId)) {
+            List<String> listJobId = Arrays.asList(jobId.split(JOB_ID_SEPARATOR));
+            Job job = this.jobExecutor.getJob(listJobId);
+            if (job instanceof LiveDataExportJob && Objects.equals(this.contextProvider.get().getUserReference(),
+                job.getRequest().getContext().get(XWikiContextContextStore.PROP_USER))) {
+                LiveDataExportJob liveDataExportJob = (LiveDataExportJob) job;
+                liveDataExportJob.getStatus().cancel();
+                success = true;
+            } else {
+                // Maybe the job finished already, then try removing the exported file from the cache.
+                success = this.exportCache.removeForCurrentUser(jobId);
+            }
+        }
+
+        if (success) {
+            return Response.status(Response.Status.NO_CONTENT).build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
     }
 }

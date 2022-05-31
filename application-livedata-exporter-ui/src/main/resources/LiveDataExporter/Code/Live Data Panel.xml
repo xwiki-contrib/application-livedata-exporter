@@ -131,7 +131,14 @@
     'menuName',
     'panelTitle',
     'startExportButton',
-    'download'
+    'download',
+    'delete',
+    'deleting',
+    'deleted',
+    'deleteFailed',
+    'startingExport',
+    'startingExportFailed',
+    'startingExportDone'
   ]
 });
 
@@ -147,18 +154,16 @@ require(['xwiki-l10n!application-livedata-exporter-translation-keys'], function 
       this.order = 5000;
       this.liveData = liveData;
 
-      const exportLink = document.createElement('a');
-      exportLink.href = '#';
-      exportLink.classList.add('button');
-      exportLink.addEventListener('click', (e) =&gt; {
+      const exportButton = document.createElement('button');
+      exportButton.addEventListener('click', (e) =&gt; {
         this.startExport();
         e.preventDefault();
       });
-      exportLink.textContent = l10n['startExportButton'];
-      const exportLinkWrapper = document.createElement('span');
-      exportLinkWrapper.classList.add('buttonwrapper');
-      exportLinkWrapper.appendChild(exportLink);
-      this.container.appendChild(exportLinkWrapper);
+      exportButton.textContent = l10n['startExportButton'];
+      const exportButtonWrapper = document.createElement('span');
+      exportButtonWrapper.classList.add('buttonwrapper');
+      exportButtonWrapper.appendChild(exportButton);
+      this.container.appendChild(exportButtonWrapper);
 
       this.exportList = document.createElement('ul');
       this.exportList.classList.add('export-list');
@@ -175,7 +180,6 @@ require(['xwiki-l10n!application-livedata-exporter-translation-keys'], function 
     }
 
     updateStatus(statusContainer, status) {
-      console.log(status);
       let progressBar = statusContainer.querySelector('.ui-progress-bar');
       const offset = status.progress?.offset || 0;
       progressBar.style.width = `${offset * 100}%`;
@@ -190,14 +194,12 @@ require(['xwiki-l10n!application-livedata-exporter-translation-keys'], function 
       }
 
       if (status.state === 'FINISHED') {
-         const downloadLink = document.createElement('a');
-         downloadLink.textContent = l10n['download'];
-         downloadLink.href = `${XWiki.contextPath}/rest/liveData/export/csv?jobId=${encodeURIComponent(status.id)}`;
-         statusContainer.appendChild(downloadLink);
+        statusContainer.querySelector('.download').classList.remove('disabled');
       }
     }
 
     startExport() {
+      const notification = new XWiki.widgets.Notification(l10n['startingExport'], 'inprogress');
       const requestURL = `${XWiki.contextPath}/rest/liveData/export/csv?namespace=wiki:${encodeURIComponent(XWiki.currentWiki)}`;
       const headers = {
         'Accept': 'application/json',
@@ -210,26 +212,66 @@ require(['xwiki-l10n!application-livedata-exporter-translation-keys'], function 
         // Send everything except the data to avoid exposing the data in the request which is not fully private.
         body: JSON.stringify({meta: this.liveData.data.meta, query: this.liveData.data.query, id: this.liveData.data.id, data: {count: this.liveData.data.data.count}})
       }).then(async rawResponse =&gt; {
-        const initialStatus = await rawResponse.json()
-        const statusContainer = document.createElement('li');
-        statusContainer.classList.add('ui-progress');
-        statusContainer.innerHTML = '&lt;div class="ui-progress-background"&gt;\n' +
-          '&lt;div class="ui-progress-bar green" style="width: 0;"&gt;&lt;/div&gt;&lt;/div&gt;\n' +
-          '&lt;p class="ui-progress-message"&gt;&lt;/p&gt;';
-        this.exportList.appendChild(statusContainer);
-        this.updateStatus(statusContainer, initialStatus);
+        if (!rawResponse.ok) {
+          notification.replace(new XWiki.widgets.Notification(l10n['startFailed'], 'error'));
+        } else {
+          notification.replace(new XWiki.widgets.Notification(l10n['startingExportDone'], 'done'));
+          const initialStatus = await rawResponse.json()
+          const statusContainer = document.createElement('li');
+          statusContainer.classList.add('ui-progress');
+          statusContainer.innerHTML = '&lt;div class="ui-progress-background"&gt;\n' +
+            '&lt;div class="ui-progress-bar green" style="width: 0;"&gt;&lt;/div&gt;&lt;/div&gt;\n' +
+            '&lt;p class="ui-progress-message"&gt;&lt;/p&gt;\n' +
+            '&lt;div class="xform"&gt;\n' +
+            '&lt;div class="buttons"&gt;\n' +
+            '&lt;span class="buttonwrapper"&gt;' +
+            '&lt;a class="button disabled download" download&gt;&lt;/a&gt;' +
+            '&lt;/span&gt;' +
+            '&lt;span class="buttonwrapper"&gt;' +
+            '&lt;button class="secondary delete"&gt;&lt;/button&gt;' +
+            '&lt;/span&gt;\n' +
+            '&lt;/div&gt;' +
+            '&lt;/div&gt;';
+          this.exportList.appendChild(statusContainer);
+          const jobURL = `${XWiki.contextPath}/rest/liveData/export/csv?jobId=${encodeURIComponent(initialStatus.id)}`;
 
-        let statusURL = initialStatus.links.find(link =&gt; link.rel === 'self')?.href;
-        if (statusURL) {
-          statusURL += "?log=true";
-          let status = initialStatus;
-          // Small initial delay to quickly fetch the log and potentially the job is very fast and thus finished already.
-          await this.delay(50);
-          while (statusURL &amp;&amp; (status.state === 'NONE' || status.state === 'RUNNING')) {
-            const statusResponse = await fetch(statusURL, {headers: {'Accept': 'application/json'}});
-            status = await statusResponse.json();
-            this.updateStatus(statusContainer, status);
-            await this.delay(1000);
+          const deleteButton = statusContainer.querySelector('.delete');
+          deleteButton.textContent = l10n['delete'];
+          deleteButton.addEventListener('click', (e) =&gt; {
+            const deleteNotification = new XWiki.widgets.Notification(l10n['deleting'], 'inprogress');
+            fetch(jobURL, {
+              method: 'DELETE',
+              body: null
+            }).then(async rawResponse =&gt; {
+              if (rawResponse.ok) {
+                deleteNotification.replace(new XWiki.widgets.Notification(l10n['deleted'], 'done'));
+                statusContainer.parentNode?.removeChild(statusContainer);
+              } else {
+                deleteNotification.replace(new XWiki.widgets.Notification(l10n['deleteFailed'], 'error'));
+              }
+            });
+
+            e.preventDefault();
+          });
+
+          const downloadLink = statusContainer.querySelector('.download');
+          downloadLink.textContent = l10n['download'];
+          downloadLink.href = jobURL;
+
+          this.updateStatus(statusContainer, initialStatus);
+
+          let statusURL = initialStatus?.links?.find(link =&gt; link.rel === 'self')?.href;
+          if (statusURL) {
+            statusURL += "?log=true";
+            let status = initialStatus;
+            // Small initial delay to quickly fetch the log and potentially the job is very fast and thus finished already.
+            await this.delay(50);
+            while (statusURL &amp;&amp; (status.state === 'NONE' || status.state === 'RUNNING')) {
+              const statusResponse = await fetch(statusURL, {headers: {'Accept': 'application/json'}});
+              status = await statusResponse.json();
+              this.updateStatus(statusContainer, status);
+              await this.delay(1000);
+            }
           }
         }
       });

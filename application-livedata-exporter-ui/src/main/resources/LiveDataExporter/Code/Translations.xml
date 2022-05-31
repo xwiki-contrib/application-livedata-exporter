@@ -41,6 +41,13 @@
 livedata.exporter.panelTitle=Export
 livedata.exporter.startExportButton=Start export
 livedata.exporter.download=Download
+livedata.exporter.delete=Delete
+livedata.exporter.deleting=Deleting the export…
+livedata.exporter.deleted=The export has been deleted.
+livedata.exporter.deleteFailed=Deleting the export failed for unknown reasons.
+livedata.exporter.startingExport=Starting export…
+livedata.exporter.startingExportFailed=Starting the export failed for unknown reasons.
+livedata.exporter.startingExportDone=The export has been started.
 </content>
   <object>
     <name>LiveDataExporter.Code.Translations</name>

@@ -67,6 +67,12 @@ public class DefaultLiveDataExportCache implements LiveDataExportCache, Initiali
     }
 
     @Override
+    public void remove(String id)
+    {
+        this.exportResultCache.remove(id);
+    }
+
+    @Override
     public void initialize() throws InitializationException
     {
         EntryEvictionConfiguration evictionConfiguration = new EntryEvictionConfiguration();

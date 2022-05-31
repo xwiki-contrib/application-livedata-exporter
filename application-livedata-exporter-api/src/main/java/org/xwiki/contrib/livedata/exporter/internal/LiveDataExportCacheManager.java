@@ -34,6 +34,8 @@ import org.xwiki.user.UserReferenceResolver;
 /**
  * Manages the {@link LiveDataExportCache}, providing a simpler interface to add/remove entries for the current user.
  *
+ * Put and remove are synchronized as remove isn't
+ *
  * @version $Id$
  */
 @Component(roles = LiveDataExportCacheManager.class)
@@ -70,6 +72,23 @@ public class LiveDataExportCacheManager
             return result;
         } else {
             return Optional.empty();
+        }
+    }
+
+    /**
+     * Removes the result from the cache if it belongs to the current user.
+     *
+     * @param id the id of the result to remove
+     * @return if the result has been found and removed for the current user
+     */
+    public boolean removeForCurrentUser(String id)
+    {
+        Optional<LiveDataExportResult> result = this.liveDataExportCache.get(id);
+        if (result.isPresent() && Objects.equals(getCurrentUserReference(),  result.get().getUserReference())) {
+            this.liveDataExportCache.remove(id);
+            return true;
+        } else {
+            return false;
         }
     }
 

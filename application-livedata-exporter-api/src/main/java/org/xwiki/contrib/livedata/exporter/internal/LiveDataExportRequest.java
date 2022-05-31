@@ -29,8 +29,6 @@ import org.xwiki.livedata.LiveDataConfiguration;
  */
 public class LiveDataExportRequest extends AbstractRequest
 {
-    private static final String PROPERTY_SESSION_ID = "sessionId";
-
     private static final String PROPERTY_NAMESPACE = "namespace";
 
     private static final String PROPERTY_FORMAT = "format";
@@ -40,33 +38,15 @@ public class LiveDataExportRequest extends AbstractRequest
     /**
      * Construct a new export request with the given Live Data configuration.
      *
-     * @param sessionId the session id in which the result shall be stored
      * @param format the format of the export
      * @param namespace the namespace in which the Live Data source should be found
      * @param configuration the configuration for the Live Data
      */
-    public LiveDataExportRequest(String sessionId, String format, String namespace, LiveDataConfiguration configuration)
+    public LiveDataExportRequest(String format, String namespace, LiveDataConfiguration configuration)
     {
-        setSessionId(sessionId);
         setFormat(format);
         setNamespace(namespace);
         setConfiguration(configuration);
-    }
-
-    /**
-     * @param sessionId see {@link #getSessionId()}
-     */
-    public void setSessionId(String sessionId)
-    {
-        setProperty(PROPERTY_SESSION_ID, sessionId);
-    }
-
-    /**
-     * @return the id of the session for which the export shall be created
-     */
-    public String getSessionId()
-    {
-        return getProperty(PROPERTY_SESSION_ID);
     }
 
     /**

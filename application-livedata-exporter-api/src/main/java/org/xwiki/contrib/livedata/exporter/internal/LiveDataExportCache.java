@@ -46,4 +46,11 @@ public interface LiveDataExportCache
      * @param data the result of the job
      */
     void put(String id, LiveDataExportResult data);
+
+    /**
+     * Deletes the file for the given job id (parts joined by "/") from the cache.
+     *
+     * @param id the id of the job
+     */
+    void remove(String id);
 }

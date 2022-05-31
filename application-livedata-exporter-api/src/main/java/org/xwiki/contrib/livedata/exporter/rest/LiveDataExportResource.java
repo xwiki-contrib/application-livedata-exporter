@@ -19,6 +19,7 @@
  */
 package org.xwiki.contrib.livedata.exporter.rest;
 
+import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -68,4 +69,14 @@ public interface LiveDataExportResource
      */
     @GET
     Response download(@QueryParam("jobId") String jobId) throws XWikiRestException;
+
+    /**
+     * Cancel or delete the given export job.
+     *
+     * @param jobId the id of the job
+     * @return if the export has been found and cancelled/deleted
+     * @throws XWikiRestException when the download cannot be found or the user must not access it
+     */
+    @DELETE
+    Response delete(@QueryParam("jobId") String jobId) throws XWikiRestException;
 }
