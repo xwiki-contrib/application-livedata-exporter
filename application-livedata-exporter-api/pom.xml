@@ -33,6 +33,11 @@
   <description>Provides the backend API for the Live Data export.</description>
   <packaging>jar</packaging>
 
+  <properties>
+    <xwiki.extension.name>Live Data Exporter API</xwiki.extension.name>
+    <xwiki.extension.category>api</xwiki.extension.category>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.xwiki.platform</groupId>

@@ -34,6 +34,11 @@
   <description>Adds CSV export functionality to Live Data.</description>
   <packaging>xar</packaging>
 
+  <properties>
+    <xwiki.extension.name>Live Data Exporter Application</xwiki.extension.name>
+    <xwiki.extension.category>application</xwiki.extension.category>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.xwiki.contrib</groupId>
