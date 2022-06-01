@@ -149,7 +149,7 @@
   ]
 });
 
-require(['xwiki-l10n!application-livedata-exporter-translation-keys'], function (l10n) {
+require(['xwiki-l10n!application-livedata-exporter-translation-keys', 'moment', 'jquery'], function (l10n, moment, jQuery) {
   class LiveDataExporterPanel {
     constructor(liveData) {
       this.id = 'exporterPanel';
@@ -232,7 +232,20 @@ require(['xwiki-l10n!application-livedata-exporter-translation-keys'], function 
         let filterConstraints = [];
         filter.constraints.forEach(constraint =&gt; {
           const operatorName = filterDefinition?.operators.find(o =&gt; o.id === constraint.operator).name;
-          filterConstraints.push(operatorName + ' ' + constraint.value);
+          let filterValue = constraint.value;
+          // Apply formatting for the date.
+          if (filterDefinition.id === 'date') {
+            const range = filterValue.split("/");
+            if (range.length &lt;= 2) {
+              filterValue = range.map(dateString =&gt; {
+                const date = moment(dateString);
+                const dateFormat = filterDefinition.dateFormat ? moment().toMomentFormatString(filterDefinition.dateFormat) : "YYYY/MM/DD HH:mm";
+                return date.isValid() ? date.format(dateFormat) : dateString;
+              }).join(" - ");
+            }
+          }
+
+          filterConstraints.push(operatorName + ' ' + filterValue);
         });
         const filterItem = document.createElement('dd');
         filterItem.textContent = l10n.get('filterItem', propertyName, filterConstraints.join(', '));
@@ -345,7 +358,17 @@ require(['xwiki-l10n!application-livedata-exporter-translation-keys'], function 
   }
 
   document.addEventListener('xwiki:livedata:instanceCreated', function(e) {
-    e.detail.livedata.registerPanel(new LiveDataExporterPanel(e.detail.livedata));
+    if (!e.detail.livedata.panels.find(p =&gt; p.id === 'exporterPanel')) {
+      e.detail.livedata.registerPanel(new LiveDataExporterPanel(e.detail.livedata));
+    }
+  });
+
+  // Add the panel to all already initialized Live Data instances.
+  document.querySelectorAll('.liveData').forEach(e =&gt; {
+    const liveData = jQuery(e).data('liveData');
+    if (liveData) {
+      liveData.registerPanel(new LiveDataExporterPanel(liveData));
+    }
   });
 });
 </code>
