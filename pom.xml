@@ -32,7 +32,7 @@
     <xwiki.issueManagement.jira.id>LDEXP</xwiki.issueManagement.jira.id>
   </properties>
   <artifactId>application-livedata-exporter</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0</version>
   <packaging>pom</packaging>
   <name>Live Data Exporter Application - Parent POM</name>
   <description>Parent POM for Live Data Exporter modules.</description>
@@ -54,7 +54,7 @@
     <connection>scm:git:git://github.com/xwiki-contrib/application-livedata-exporter.git</connection>
     <developerConnection>scm:git:git@github.com:xwiki-contrib/application-livedata-exporter.git</developerConnection>
     <url>https://github.com/xwiki-contrib/application-livedata-exporter/tree/main</url>
-    <tag>HEAD</tag>
+    <tag>application-livedata-exporter-1.0</tag>
   </scm>
   <modules>
     <module>application-livedata-exporter-api</module>
