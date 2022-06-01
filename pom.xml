@@ -28,6 +28,8 @@
     <version>14.4</version>
   </parent>
   <properties>
+    <xwiki.release.jira.skip>false</xwiki.release.jira.skip>
+    <xwiki.issueManagement.jira.id>LDEXP</xwiki.issueManagement.jira.id>
   </properties>
   <artifactId>application-livedata-exporter</artifactId>
   <version>1.0-SNAPSHOT</version>
@@ -54,10 +56,6 @@
     <url>https://github.com/xwiki-contrib/application-livedata-exporter/tree/main</url>
     <tag>HEAD</tag>
   </scm>
-  <issueManagement>
-    <system>jira</system>
-    <url>https://jira.xwiki.org/browse/LEAP</url>
-  </issueManagement>
   <modules>
     <module>application-livedata-exporter-api</module>
     <module>application-livedata-exporter-ui</module>
