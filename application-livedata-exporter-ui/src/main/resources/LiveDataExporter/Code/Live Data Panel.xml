@@ -366,7 +366,8 @@ require(['xwiki-l10n!application-livedata-exporter-translation-keys', 'moment', 
   // Add the panel to all already initialized Live Data instances.
   document.querySelectorAll('.liveData').forEach(e =&gt; {
     const liveData = jQuery(e).data('liveData');
-    if (liveData) {
+    // Ensure that nothing happens when this code is executed twice.
+    if (liveData &amp;&amp; !liveData.panels.find(p =&gt; p.id === 'exporterPanel')) {
       liveData.registerPanel(new LiveDataExporterPanel(liveData));
     }
   });
