@@ -132,6 +132,7 @@
     'panelTitle',
     'startExportButton',
     'download',
+    'cancel',
     'delete',
     'deleting',
     'deleted',
@@ -202,6 +203,8 @@ require(['xwiki-l10n!application-livedata-exporter-translation-keys', 'moment', 
 
       if (status.state === 'FINISHED') {
         statusContainer.querySelector('.download').classList.remove('disabled');
+        const deleteButton = statusContainer.querySelector('.delete');
+        deleteButton.textContent = l10n['delete'];
       }
     }
 
@@ -314,7 +317,7 @@ require(['xwiki-l10n!application-livedata-exporter-translation-keys', 'moment', 
           statusContainer.querySelector('.export-title').textContent = l10n.get('exportTitle', initialStatus.id);
 
           const deleteButton = statusContainer.querySelector('.delete');
-          deleteButton.textContent = l10n['delete'];
+          deleteButton.textContent = l10n['cancel'];
           deleteButton.addEventListener('click', (e) =&gt; {
             const deleteNotification = new XWiki.widgets.Notification(l10n['deleting'], 'inprogress');
             fetch(jobURL, {

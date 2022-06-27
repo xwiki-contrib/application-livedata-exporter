@@ -41,6 +41,7 @@
 livedata.exporter.panelTitle=Export
 livedata.exporter.startExportButton=Start export
 livedata.exporter.download=Download
+livedata.exporter.cancel=Cancel
 livedata.exporter.delete=Delete
 livedata.exporter.deleting=Deleting the export…
 livedata.exporter.deleted=The export has been deleted.
