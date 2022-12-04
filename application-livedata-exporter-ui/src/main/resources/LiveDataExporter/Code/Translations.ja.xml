@@ -37,24 +37,24 @@
   <minorEdit>false</minorEdit>
   <syntaxId>plain/1.0</syntaxId>
   <hidden>true</hidden>
-  <content>### Missing: livedata.exporter.menuName=Export…
-### Missing: livedata.exporter.panelTitle=Export
+  <content>livedata.exporter.menuName=エクスポート…
+livedata.exporter.panelTitle=エクスポート
 livedata.exporter.startExportButton=エクスポートを開始
-### Missing: livedata.exporter.download=Download
-### Missing: livedata.exporter.cancel=Cancel
-### Missing: livedata.exporter.delete=Delete
-### Missing: livedata.exporter.deleting=Deleting the export…
-### Missing: livedata.exporter.deleted=The export has been deleted.
-### Missing: livedata.exporter.deleteFailed=Deleting the export failed for unknown reasons.
-### Missing: livedata.exporter.startingExport=Starting export…
-### Missing: livedata.exporter.startingExportFailed=Starting the export failed for unknown reasons.
-### Missing: livedata.exporter.startingExportDone=The export has been started.
-### Missing: livedata.exporter.exportTitle=Export {0}
-### Missing: livedata.exporter.properties=Properties
-### Missing: livedata.exporter.filters=Filters
-### Missing: livedata.exporter.filterItem={0}: {1}
-### Missing: livedata.exporter.sorting=Sorting
-### Missing: livedata.exporter.descendingSortItem={0} in descending order
-### Missing: livedata.exporter.ascendingSortItem={0} in ascending order
+livedata.exporter.download=ダウンロード
+livedata.exporter.cancel=キャンセル
+livedata.exporter.delete=削除
+livedata.exporter.deleting=エクスポートを削除しています…
+livedata.exporter.deleted=エクスポートを削除しました。
+livedata.exporter.deleteFailed=エクスポートを削除できませんでした。
+livedata.exporter.startingExport=エクスポートを開始しています…
+livedata.exporter.startingExportFailed=エクスポートを開始できませんでした。
+livedata.exporter.startingExportDone=エクスポートを開始しました。
+livedata.exporter.exportTitle={0}のエクスポート
+livedata.exporter.properties=プロパティー
+livedata.exporter.filters=フィルター
+livedata.exporter.filterItem={0}：{1}
+livedata.exporter.sorting=並び替え
+livedata.exporter.descendingSortItem={0}の降順
+livedata.exporter.ascendingSortItem={0}の昇順
 </content>
   </xwikidoc>
