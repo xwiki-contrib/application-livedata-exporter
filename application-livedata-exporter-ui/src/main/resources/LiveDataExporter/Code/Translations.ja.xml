@@ -1,0 +1,60 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<xwikidoc version="1.5" reference="LiveDataExporter.Code.Translations" locale="ja">
+  <web>LiveDataExporter.Code</web>
+  <name>Translations</name>
+  <language>ja</language>
+  <defaultLanguage>en</defaultLanguage>
+  <translation>1</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <parent>LiveDataExporter.Code.Live Data Panel</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <originalMetadataAuthor>xwiki:XWiki.Admin</originalMetadataAuthor>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <version>1.1</version>
+  <title>Translations</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>plain/1.0</syntaxId>
+  <hidden>true</hidden>
+  <content>livedata.exporter.menuName=エクスポート…
+livedata.exporter.panelTitle=エクスポート
+livedata.exporter.startExportButton=エクスポートを開始
+livedata.exporter.download=ダウンロード
+livedata.exporter.cancel=キャンセル
+livedata.exporter.delete=削除
+livedata.exporter.deleting=エクスポートを削除しています…
+livedata.exporter.deleted=エクスポートを削除しました。
+livedata.exporter.deleteFailed=エクスポートを削除できませんでした。
+livedata.exporter.startingExport=エクスポートを開始しています…
+livedata.exporter.startingExportFailed=エクスポートを開始できませんでした。
+livedata.exporter.startingExportDone=エクスポートを開始しました。
+livedata.exporter.exportTitle={0}のエクスポート
+livedata.exporter.properties=プロパティー
+livedata.exporter.filters=フィルター
+livedata.exporter.filterItem={0}：{1}
+livedata.exporter.sorting=並び替え
+livedata.exporter.descendingSortItem={0}の降順
+livedata.exporter.ascendingSortItem={0}の昇順
+</content>
+  </xwikidoc>
