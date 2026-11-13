@@ -32,7 +32,7 @@ import org.xwiki.test.ui.po.BaseElement;
  * An export listed in the {@link LiveDataExporterPanel}.
  *
  * @version $Id$
- * @since 1.1.5
+ * @since 1.2
  */
 public class LiveDataExport extends BaseElement
 {

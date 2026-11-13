@@ -32,7 +32,7 @@
     <xwiki.issueManagement.jira.id>LDEXP</xwiki.issueManagement.jira.id>
   </properties>
   <artifactId>application-livedata-exporter</artifactId>
-  <version>1.1.5-SNAPSHOT</version>
+  <version>1.2-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Live Data Exporter Application - Parent POM</name>
   <description>Parent POM for Live Data Exporter modules.</description>

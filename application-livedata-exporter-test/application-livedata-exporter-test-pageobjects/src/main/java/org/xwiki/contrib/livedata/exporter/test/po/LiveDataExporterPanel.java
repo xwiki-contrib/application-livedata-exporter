@@ -31,7 +31,7 @@ import org.xwiki.test.ui.po.BaseElement;
  * The export panel that the Live Data Exporter adds to a Live Data.
  *
  * @version $Id$
- * @since 1.1.5
+ * @since 1.2
  */
 public class LiveDataExporterPanel extends BaseElement
 {
