@@ -60,4 +60,12 @@
     <module>application-livedata-exporter-api</module>
     <module>application-livedata-exporter-ui</module>
   </modules>
+  <profiles>
+    <profile>
+      <id>integration-tests</id>
+      <modules>
+        <module>application-livedata-exporter-test</module>
+      </modules>
+    </profile>
+  </profiles>
 </project>
