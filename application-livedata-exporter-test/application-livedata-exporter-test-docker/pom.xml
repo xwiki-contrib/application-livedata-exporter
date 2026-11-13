@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.contrib</groupId>
     <artifactId>application-livedata-exporter-test</artifactId>
-    <version>1.2-SNAPSHOT</version>
+    <version>1.2</version>
   </parent>
   <artifactId>application-livedata-exporter-test-docker</artifactId>
   <name>Live Data Exporter Application - Tests - Functional Docker Tests</name>
