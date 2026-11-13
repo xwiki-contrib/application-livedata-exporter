@@ -7,7 +7,7 @@ Adds CSV export functionality to Live Data.
 * [Issue Tracker](https://jira.xwiki.org/browse/LDEXP>)
 * Communication: [Forum](https://forum.xwiki.org), [Chat](https://dev.xwiki.org/xwiki/bin/view/Community/Chat)
 * [Development Practices](https://dev.xwiki.org/xwiki/bin/view/Community/DevelopmentPractices)
-* Minimal XWiki version supported: XWiki 14.4
+* Minimal XWiki version supported: XWiki 14.10
 * License: LGPL 2.1
 * [Translations](https://l10n.xwiki.org/projects/xwiki-contrib/live-data-exporter-application-ui/)
 * Sonar Dashboard: N/A
