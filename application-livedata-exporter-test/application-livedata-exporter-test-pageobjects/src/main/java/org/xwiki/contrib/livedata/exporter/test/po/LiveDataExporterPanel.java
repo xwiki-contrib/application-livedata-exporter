@@ -20,7 +20,6 @@
 package org.xwiki.contrib.livedata.exporter.test.po;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -63,21 +62,16 @@ public class LiveDataExporterPanel extends BaseElement
 
         WebElement liveData = getUtil().getDriver().findElement(By.id(liveDataId));
         liveData.findElement(By.cssSelector(".livedata-dropdown-menu .dropdown-toggle")).click();
-        // The exporter registers its panel asynchronously, once its JavaScript is loaded.
-        getUtil().getDriver().waitUntilCondition(driver -> findMenuEntry(liveData).isPresent());
-        findMenuEntry(liveData).get().click();
+        // The exporter registers its panel asynchronously, once its JavaScript is loaded: the implicit wait of
+        // findElement covers it.
+        liveData.findElement(By.xpath(String.format(
+            ".//*[contains(@class, 'livedata-dropdown-menu')]//ul//a[normalize-space() = '%s']", MENU_ENTRY_NAME)))
+            .click();
 
         WebElement container =
             liveData.findElement(By.cssSelector(".livedata-advanced-panel-exporterPanel"));
         getUtil().getDriver().waitUntilCondition(driver -> container.isDisplayed());
         return new LiveDataExporterPanel(container);
-    }
-
-    private static Optional<WebElement> findMenuEntry(WebElement liveData)
-    {
-        return liveData.findElements(By.cssSelector(".livedata-dropdown-menu .dropdown-menu a")).stream()
-            .filter(entry -> MENU_ENTRY_NAME.equals(entry.getText().trim()))
-            .findFirst();
     }
 
     /**
@@ -97,6 +91,7 @@ public class LiveDataExporterPanel extends BaseElement
 
     private List<WebElement> getExports()
     {
-        return this.container.findElements(EXPORT_ITEMS);
+        // Without waiting: the list is empty until the first export is started.
+        return getDriver().findElementsWithoutWaiting(this.container, EXPORT_ITEMS);
     }
 }
