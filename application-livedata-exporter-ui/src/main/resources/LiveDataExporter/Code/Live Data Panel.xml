@@ -164,8 +164,14 @@ require(['xwiki-l10n!application-livedata-exporter-translation-keys', 'moment', 
 
       const exportButton = document.createElement('button');
       exportButton.addEventListener('click', (e) =&gt; {
-        this.startExport();
         e.preventDefault();
+        try {
+          this.startExport();
+        } catch (error) {
+          // Without this, an unexpected error would leave the user with a button that silently does nothing.
+          console.error('Failed to start the Live Data export.', error);
+          new XWiki.widgets.Notification(l10n['startingExportFailed'], 'error');
+        }
       });
       exportButton.textContent = l10n['startExportButton'];
       const exportButtonWrapper = document.createElement('span');
@@ -219,9 +225,10 @@ require(['xwiki-l10n!application-livedata-exporter-translation-keys', 'moment', 
       result.appendChild(propertiesLabel);
 
       const propertyToDescriptor = this.liveData.data.meta.propertyDescriptors.reduce((a, v) =&gt; ({ ...a, [v.id]: v}), {});
-      const visibleProperties = this.liveData.data.query.properties.filter(p =&gt; p !== '_actions' &amp;&amp; propertyToDescriptor[p].visible);
+      const getPropertyName = property =&gt; propertyToDescriptor[property]?.name ?? property;
+      const visibleProperties = this.liveData.data.query.properties.filter(p =&gt; p !== '_actions' &amp;&amp; propertyToDescriptor[p]?.visible);
       const propertiesContent = document.createElement('dd');
-      propertiesContent.textContent = visibleProperties.map(p =&gt; propertyToDescriptor[p].name).join(', ');
+      propertiesContent.textContent = visibleProperties.map(getPropertyName).join(', ');
       result.appendChild(propertiesContent);
 
       const filtersLabel = document.createElement('dt');
@@ -230,14 +237,17 @@ require(['xwiki-l10n!application-livedata-exporter-translation-keys', 'moment', 
 
       this.liveData.data.query.filters.forEach(filter =&gt; {
         const filterDefinition = this.liveData.getFilterDescriptor(filter.property);
-        const propertyName = propertyToDescriptor[filter.property].name;
+        const propertyName = getPropertyName(filter.property);
 
         let filterConstraints = [];
         filter.constraints.forEach(constraint =&gt; {
-          const operatorName = filterDefinition?.operators.find(o =&gt; o.id === constraint.operator).name;
+          // A constraint without operator (e.g., from the filters parameter of the Live Data macro) uses the default
+          // operator of the filter, as in Live Data.
+          const operator = constraint.operator ?? filterDefinition?.defaultOperator;
+          const operatorName = filterDefinition?.operators?.find(o =&gt; o.id === operator)?.name ?? operator;
           let filterValue = constraint.value;
           // Apply formatting for the date.
-          if (filterDefinition.id === 'date') {
+          if (filterDefinition?.id === 'date') {
             const range = filterValue.split("/");
             if (range.length &lt;= 2) {
               filterValue = range.map(dateString =&gt; {
@@ -248,7 +258,7 @@ require(['xwiki-l10n!application-livedata-exporter-translation-keys', 'moment', 
             }
           }
 
-          filterConstraints.push(operatorName + ' ' + filterValue);
+          filterConstraints.push(operatorName ? `${operatorName} ${filterValue}` : `${filterValue}`);
         });
         const filterItem = document.createElement('dd');
         filterItem.textContent = l10n.get('filterItem', propertyName, filterConstraints.join(', '));
@@ -260,7 +270,7 @@ require(['xwiki-l10n!application-livedata-exporter-translation-keys', 'moment', 
       result.appendChild(sortLabel);
 
       this.liveData.data.query.sort.forEach(sort =&gt; {
-        const propertyName = propertyToDescriptor[sort.property].name;
+        const propertyName = getPropertyName(sort.property);
         const sortItem = document.createElement('dd');
         if (sort.descending) {
           sortItem.textContent = l10n.get('descendingSortItem', propertyName);
@@ -289,7 +299,7 @@ require(['xwiki-l10n!application-livedata-exporter-translation-keys', 'moment', 
         body: JSON.stringify({meta: this.liveData.data.meta, query: this.liveData.data.query, id: this.liveData.data.id, data: {count: this.liveData.data.data.count}})
       }).then(async rawResponse =&gt; {
         if (!rawResponse.ok) {
-          notification.replace(new XWiki.widgets.Notification(l10n['startFailed'], 'error'));
+          notification.replace(new XWiki.widgets.Notification(l10n['startingExportFailed'], 'error'));
         } else {
           notification.replace(new XWiki.widgets.Notification(l10n['startingExportDone'], 'done'));
           const initialStatus = await rawResponse.json()
