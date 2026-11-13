@@ -36,6 +36,10 @@
   <properties>
     <xwiki.extension.name>Live Data Exporter API</xwiki.extension.name>
     <xwiki.extension.category>api</xwiki.extension.category>
+    <!-- Only installable on the root namespace: REST resources are registered globally, not per wiki, and the export
+         cache is created with a fixed name, so a second instance of its component (from an install on another wiki)
+         would fail to initialize and break the export there. -->
+    <xwiki.extension.namespaces>{root}</xwiki.extension.namespaces>
   </properties>
 
   <dependencies>
